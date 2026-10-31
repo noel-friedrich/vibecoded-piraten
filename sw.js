@@ -1,4 +1,4 @@
-const CACHE = "pi-raten-v3-reset";
+const CACHE = "pi-raten-v4-camera";
 const FILES = [
   "./",
   "./index.html",

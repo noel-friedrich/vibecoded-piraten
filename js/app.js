@@ -17,6 +17,8 @@ let game,
   photo = null,
   saving = false;
 let wakeLock;
+let photoAttempt = 0,
+  takingPhoto = false;
 
 function show(name) {
   screen = name;
@@ -47,6 +49,8 @@ function releaseWakeLock() {
 }
 function home() {
   run++;
+  photoAttempt++;
+  takingPhoto = false;
   accepting = false;
   starting = false;
   leaderboard.cancel();
@@ -80,28 +84,9 @@ async function startGame() {
   const token = ++run;
   $("play").classList.add("loading");
   $("play-again").classList.add("loading");
-  // Both calls begin inside the user gesture, so iPad Safari can unlock media.
-  const unlocked = audio.unlock();
-  try {
-    await camera.start();
-    await unlocked;
-  } catch (error) {
-    if (token !== run) {
-      camera.stop();
-      return;
-    }
-    starting = false;
-    $("play").classList.remove("loading");
-    $("play-again").classList.remove("loading");
-    $("camera-error").textContent = cameraError(error);
-    if (!$("camera-dialog").open) $("camera-dialog").showModal();
-    return;
-  }
-  if (token !== run) {
-    camera.stop();
-    return;
-  }
-  $("camera-dialog").close();
+  // Unlock audio on the tap. Camera access is deferred until the visible photo step.
+  await audio.unlock().catch(() => {});
+  if (token !== run) return;
   leaderboard.cancel();
   game = new Game();
   photo = null;
@@ -202,38 +187,67 @@ async function finishRound() {
   audio.fanfare();
   replayAnimation($("impact-overlay"), "win");
   confetti();
+  const attempt = photoAttempt;
   await sleep(2200);
-  if (token !== run) return;
+  if (token !== run || attempt !== photoAttempt) return;
   await takePhoto(token);
 }
-// Countdown time advances only while the app is visible, never in a background tab.
-async function visibleSecond(token) {
+// A background interruption cancels this countdown and requires a retry tap.
+async function visibleSecond(token, attempt) {
   let elapsed = 0,
     previous = performance.now();
-  while (elapsed < 1000 && token === run) {
+  while (elapsed < 1000 && token === run && attempt === photoAttempt) {
     await sleep(100);
     const now = performance.now();
     if (!document.hidden) elapsed += Math.min(now - previous, 150);
     previous = now;
   }
 }
+function photoError(error) {
+  $("camera-count").textContent = "";
+  $("camera-title").textContent = "Kamera unterbrochen.";
+  $("camera-message").textContent = cameraError(error);
+  $("retry-camera").hidden = false;
+}
+function interruptPhoto() {
+  photoAttempt++;
+  takingPhoto = false;
+  camera.stop();
+  if (screen === "result" && !photo) {
+    photoError(
+      new Error(
+        "Bitte tippe auf „Kamera erneut starten“, wenn du wieder bereit bist.",
+      ),
+    );
+  }
+}
 async function takePhoto(token = run) {
+  if (takingPhoto || photo || screen !== "result") return;
+  if (document.hidden) {
+    interruptPhoto();
+    return;
+  }
+  takingPhoto = true;
+  const attempt = ++photoAttempt;
+  const current = () => token === run && attempt === photoAttempt;
   $("retry-camera").hidden = true;
   $("camera-title").textContent = "Dein Foto";
+  $("camera-message").textContent = "Kamera startet …";
   try {
     await camera.ready();
-    if (token !== run) return;
+    if (!current()) return;
     for (let count = 5; count > 0; count--) {
-      while (document.hidden && token === run) await sleep(200);
-      if (token !== run) return;
+      if (!current()) return;
       $("camera-count").textContent = count;
       $("camera-message").textContent = `Foto in ${count} …`;
       replayAnimation($("camera-count"), "correct-pop");
       audio.cue("tick");
-      await visibleSecond(token);
+      await visibleSecond(token, attempt);
     }
-    if (token !== run) return;
-    photo = camera.capture();
+    if (!current()) return;
+    const captured = await camera.capture();
+    if (!current()) return;
+    photo = captured;
     $("captured-photo").src = photo;
     $("captured-photo").hidden = false;
     $("camera").hidden = true;
@@ -244,13 +258,15 @@ async function takePhoto(token = run) {
     $("camera-title").textContent = "Foto gespeichert.";
     $("camera-message").textContent = "";
     await sleep(1100);
-    if (token !== run) return;
+    if (!current()) return;
     await saveResult();
   } catch (error) {
-    $("camera-count").textContent = "";
-    $("camera-title").textContent = "Kamera unterbrochen.";
-    $("camera-message").textContent = cameraError(error);
-    $("retry-camera").hidden = false;
+    if (current()) {
+      camera.stop();
+      photoError(error);
+    }
+  } finally {
+    if (current()) takingPhoto = false;
   }
 }
 async function saveResult() {
@@ -348,11 +364,6 @@ $("sound-toggle").addEventListener("click", () => {
   audio.toggle();
   soundButton();
 });
-$("camera-start-retry").addEventListener("click", startGame);
-$("camera-cancel").addEventListener("click", () => {
-  $("camera-dialog").close();
-  home();
-});
 $("retry-camera").addEventListener("click", () => {
   audio.unlock();
   takePhoto();
@@ -371,6 +382,7 @@ document.addEventListener("keydown", (event) => {
 });
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
+    if (screen === "result" && !photo) interruptPhoto();
     audio.suspend();
     releaseWakeLock();
   } else {
@@ -379,7 +391,8 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 window.addEventListener("pagehide", () => {
-  camera.stop();
+  if (screen === "result" && !photo) interruptPhoto();
+  else camera.stop();
   audio.suspend();
   releaseWakeLock();
 });
