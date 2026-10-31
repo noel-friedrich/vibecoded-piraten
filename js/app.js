@@ -128,9 +128,14 @@ function renderGame() {
   audio.setLives(game.hearts);
   $("hearts").replaceChildren(
     ...Array.from({ length: 3 }, (_, i) => {
-      const heart = document.createElement("span");
-      heart.textContent = "♥";
-      if (i >= game.hearts) heart.className = "lost";
+      const heart = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      heart.setAttribute("viewBox", "0 0 24 24");
+      heart.setAttribute("aria-hidden", "true");
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", "M12 21 3.5 12.7C-2 7.2 5.8-1.1 12 5.4 18.2-1.1 26 7.2 20.5 12.7Z");
+      path.setAttribute("fill", "currentColor");
+      heart.append(path);
+      if (i >= game.hearts) heart.classList.add("lost");
       return heart;
     }),
   );

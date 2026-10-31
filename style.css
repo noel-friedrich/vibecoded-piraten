@@ -400,15 +400,23 @@ footer > span {
 }
 .hearts {
   justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-size: 42px;
   color: var(--red);
-  letter-spacing: 7px;
-  white-space: nowrap;
-  text-shadow: 0 0 22px #ff173f66;
+}
+.hearts svg {
+  display: block;
+  width: 1em;
+  height: 1em;
+  overflow: visible;
+  filter: drop-shadow(0 0 7px #ff173f66);
 }
 .hearts .lost {
-  color: #ffffff18;
-  text-shadow: none;
+  color: #51434c;
+  filter: none;
+  opacity: .55;
 }
 .score-pill {
   display: flex;
