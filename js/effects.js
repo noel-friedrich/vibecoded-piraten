@@ -10,7 +10,7 @@ export function confetti() {
   container.replaceChildren();
   for (let i = 0; i < 65; i++) {
     const piece = document.createElement("i");
-    piece.style.cssText = `left:${Math.random() * 100}%;background:${["#ffe35b", "#fb6177", "#008a99", "#ffffff", "#69d3b0"][i % 5]};animation-delay:${Math.random() * 0.6}s;--drift:${Math.random() * 240 - 120}px;--spin:${Math.random() * 900 - 450}deg;border-radius:${i % 3 === 0 ? "50%" : "2px"}`;
+    piece.style.cssText = `left:${Math.random() * 100}%;background:${["#ff173f", "#b5072b", "#ffffff", "#ffffff", "#ff5975"][i % 5]};animation-delay:${Math.random() * 0.6}s;--drift:${Math.random() * 240 - 120}px;--spin:${Math.random() * 900 - 450}deg;border-radius:${i % 3 === 0 ? "50%" : "2px"}`;
     container.append(piece);
   }
   setTimeout(() => container.replaceChildren(), 4500);

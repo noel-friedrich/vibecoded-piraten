@@ -4,7 +4,12 @@ import { readFileSync, existsSync } from "node:fs";
 import vm from "node:vm";
 import { Game } from "../js/game.js";
 import { PI_DIGITS } from "../js/pi.js";
-import { sortScores, loadScores, addScore } from "../js/storage.js";
+import {
+  sortScores,
+  loadScores,
+  addScore,
+  resetScores,
+} from "../js/storage.js";
 
 test("Pi contains 10,000 decimals and the known first 100 digits", () => {
   assert.equal(PI_DIGITS.length, 10000);
@@ -120,4 +125,23 @@ test("offline audio handles Safari byte ranges and rejects invalid ranges", asyn
     (await sandbox.rangeResponse(request("bytes=5-2"), full())).status,
     416,
   );
+});
+
+test("reset deletes all leaderboard data without touching other settings", () => {
+  const key = "pi-raten.highscores.v1";
+  const data = new Map([
+    [key, "invalid data"],
+    ["pi-raten.muted", "true"],
+  ]);
+  globalThis.localStorage = {
+    getItem: (key) => data.get(key) ?? null,
+    removeItem: (key) => data.delete(key),
+  };
+  resetScores();
+  assert.deepEqual(loadScores(), []);
+  assert.equal(data.get("pi-raten.muted"), "true");
+  globalThis.localStorage.removeItem = () => {
+    throw new Error("SecurityError");
+  };
+  assert.throws(() => resetScores(), /nicht gelöscht/);
 });

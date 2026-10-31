@@ -12,28 +12,13 @@ function row(entry, index, freshId) {
   const image = document.createElement("img");
   image.src = entry.photo;
   image.alt = `Foto auf Platz ${index + 1}`;
-  const label = document.createElement("div");
-  label.className = "scorer-label";
-  label.textContent =
-    index === 0
-      ? "Kapitän der Ziffern"
-      : index < 3
-        ? "Pi-Legende"
-        : "Zahlenpirat";
+  scorer.append(image);
   if (entry.id === freshId) {
     const badge = document.createElement("span");
     badge.className = "new-label";
-    badge.textContent = "DU!";
-    label.append(badge);
+    badge.textContent = "DU";
+    scorer.append(badge);
   }
-  const date = document.createElement("small");
-  date.textContent = new Date(entry.createdAt).toLocaleDateString("de-CH", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-  label.append(date);
-  scorer.append(image, label);
   const score = document.createElement("div");
   score.className = "row-score";
   score.textContent = entry.score;
@@ -52,9 +37,7 @@ export class Leaderboard {
       ...scores.map((entry, index) => row(entry, index, freshId)),
     );
     document.getElementById("empty-scores").hidden = scores.length > 0;
-    document.getElementById("score-summary").textContent = scores.length
-      ? `${scores.length} AUFTRITTE. EINE UNENDLICHE ZAHL.`
-      : "DEIN RUHM BLEIBT AUF DIESER INSEL.";
+    document.getElementById("score-summary").textContent = "";
     this.list.scrollTop = 0;
   }
   async climb(scores, entry) {
@@ -65,12 +48,12 @@ export class Leaderboard {
     );
     const rank = scores.findIndex((e) => e.id === entry.id) + 1;
     const summary = document.getElementById("score-summary");
-    summary.textContent = "DEIN HIGHSCORE ENTERT DIE BESTENLISTE …";
+    summary.textContent = "Dein Platz …";
     await sleep(150);
     if (run !== this.run) return;
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
       target.scrollIntoView({ block: "center" });
-      summary.textContent = `AHOI! DEIN PLATZ: ${rank}.`;
+      summary.textContent = `Platz ${rank}`;
       return;
     }
     const floating = target.cloneNode(true);
@@ -128,7 +111,7 @@ export class Leaderboard {
     target.style.visibility = "";
     if (run !== this.run) return;
     target.classList.add("rank-landed");
-    summary.textContent = `AHOI! DEIN PLATZ: ${rank}. ${rank === 1 ? "NEUER INSELREKORD!" : "STARK GEENTERT!"}`;
+    summary.textContent = `Platz ${rank}${rank === 1 ? " · Neuer Rekord!" : ""}`;
     this.audio.fanfare();
     confetti();
   }

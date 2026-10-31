@@ -1,16 +1,9 @@
-MUSIK
-"Cipher" von Kevin MacLeod (incompetech.com)
-Quelle: https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100844
-Datei: https://incompetech.com/music/royalty-free/mp3-royaltyfree/Cipher2.mp3
+"Five Armies" Kevin MacLeod (incompetech.com)
 Licensed under Creative Commons: By Attribution 4.0 License
 https://creativecommons.org/licenses/by/4.0/
-Unverändert, als wiederholte Hintergrundmusik im Spiel verwendet.
 
-SOUNDEFFEKTE
-"Interface Sounds" von Kenney
-https://kenney.nl/assets/interface-sounds
-CC0 1.0 Universal. Siehe KENNEY-LICENSE.txt.
-Dateien: click_001, confirmation_002, error_004, bong_001, open_001.
-Download-Mirror: https://github.com/Calinou/kenney-interface-sounds
+Quelle: https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100875
+Datei: https://incompetech.com/music/royalty-free/mp3-royaltyfree/Five%20Armies.mp3
+Unverändert; während der Spielrunde als wiederholte Hintergrundmusik verwendet.
 
-Zusätzliche Fanfaren und Kameraauslöser werden mit Web Audio erzeugt.
+Soundeffekte, Countdown, Herzschlag und Show-Stings werden lokal mit Web Audio synthetisiert.

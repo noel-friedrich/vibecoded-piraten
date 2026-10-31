@@ -55,3 +55,14 @@ export function addScore(score, photo) {
     rank: scores.findIndex((e) => e.id === entry.id) + 1,
   };
 }
+
+// Remove only leaderboard data, leaving audio settings and offline assets intact.
+export function resetScores() {
+  try {
+    localStorage.removeItem(KEY);
+  } catch {
+    throw new Error(
+      "Die Highscores konnten nicht gelöscht werden. Bitte versuche es erneut.",
+    );
+  }
+}

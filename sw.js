@@ -1,4 +1,4 @@
-const CACHE = "pi-raten-v1";
+const CACHE = "pi-raten-v3-reset";
 const FILES = [
   "./",
   "./index.html",
@@ -16,14 +16,8 @@ const FILES = [
   "./assets/icons/icon-192.png",
   "./assets/icons/icon-512.png",
   "./assets/icons/apple-touch-icon.png",
-  "./assets/audio/cipher.mp3",
-  "./assets/audio/click.wav",
-  "./assets/audio/correct.wav",
-  "./assets/audio/wrong.wav",
-  "./assets/audio/tick.wav",
-  "./assets/audio/rise.wav",
+  "./assets/audio/five-armies.mp3",
   "./assets/audio/CREDITS.txt",
-  "./assets/audio/KENNEY-LICENSE.txt",
 ];
 self.addEventListener("install", (event) => {
   event.waitUntil(

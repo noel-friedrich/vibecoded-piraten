@@ -1,6 +1,6 @@
 # PI-RATEN GAMESHOW!
 
-Eine komplett lokale Gameshow für das iPad 10 im Querformat. Ein HTML-Dokument, separates CSS und JavaScript-Module unter `/js/`. Keine Laufzeit-Abhängigkeiten, kein Build, kein Server-Backend und keine externen Anfragen während des Spiels.
+Eine dramatische Gameshow in Rot, Schwarz und Weiß mit LED-Arena, bewegten Scheinwerfern und großen Touch-Tasten. Komplett lokal für das iPad 10 im Querformat. Ein HTML-Dokument, separates CSS und JavaScript-Module unter `/js/`. Keine Laufzeit-Abhängigkeiten, kein Build, kein Server-Backend und keine externen Anfragen während des Spiels.
 
 ## Starten
 
@@ -12,7 +12,7 @@ Am Computer unter http://localhost:8080 öffnen. Alternativ den gesamten Ordner 
 
 ## Auf dem iPad installieren
 
-1. HTTPS-Adresse in Safari öffnen und auf **„OFFLINE BEREIT“** unten links warten (etwa 10 MB inklusive Musik).
+1. HTTPS-Adresse in Safari öffnen und auf **„Offline bereit“** unten links warten (etwa 7 MB inklusive Musik).
 2. Teilen → **Zum Home-Bildschirm** → als Web-App hinzufügen.
 3. Vom Home-Bildschirm im Querformat starten, einmal Kamera erlauben und eine Runde ausprobieren.
 4. Für die Probe Flugmodus einschalten, die installierte App vollständig schließen und wieder öffnen.
@@ -31,6 +31,10 @@ Fotos (160 × 160 JPEG), Punkte und Zeitstempel liegen ausschließlich in `local
 
 Die App fordert bei unterstützten Browsern einen Screen Wake Lock an. Ein Countdown pausiert im Hintergrund. Offline-Dateien liegen im Cache Storage des Service Workers, Spielstände ausschließlich im localStorage. Bei Updates die Cache-Version in `sw.js` erhöhen.
 
+## Highscores zurücksetzen
+
+Auf der Startseite oder in der Bestenliste **fünfmal innerhalb von fünf Sekunden auf die Musik-Quellenangabe unten rechts tippen**. Im Dialog exakt `Reset` eingeben und **Alles löschen** drücken. Das entfernt sämtliche Highscores und Fotos endgültig. Abbrechen verändert nichts; Toneinstellung und Offline-Dateien bleiben erhalten. Während einer Runde oder der Ergebnisanimation ist der Reset gesperrt. Die vollständigen Musik-Credits lassen sich weiterhin über das Link-Kontextmenü öffnen.
+
 ## Dateien
 
 - `js/game.js`, `js/pi.js`: Spielregeln und vorberechnete Nachkommastellen
@@ -41,7 +45,7 @@ Die App fordert bei unterstützten Browsern einen Screen Wake Lock an. Ein Count
 - `js/audio.js`, `assets/audio/`: lokale Musik und Sounds
 - `sw.js`, `manifest.webmanifest`: Offline-Cache und Installation
 
-Musik: **„Cipher“ von Kevin MacLeod**, CC BY 4.0; Soundeffekte: **Kenney Interface Sounds**, CC0. Vollständige Quellen und Credits in `assets/audio/CREDITS.txt` und in der Spielhilfe.
+Musik: **„Five Armies“ von Kevin MacLeod**, CC BY 4.0. Quellen und Credits in `assets/audio/CREDITS.txt`, erreichbar über die kleine Quellenangabe am unteren Rand. Dramatische Buzzer, Treffer, Bassimpulse, Countdown, Fanfaren und Herzschlag bei einem verbleibenden Leben werden lokal mit Web Audio erzeugt. Keine Spielhilfe und keine dekorativen Slogans im Interface. Die System-Einstellung „Bewegung reduzieren“ reduziert die Showeffekte.
 
 ## Prüfen
 

@@ -1,5 +1,5 @@
 import { Game } from "./game.js";
-import { loadScores, addScore } from "./storage.js";
+import { loadScores, addScore, resetScores } from "./storage.js";
 import { ShowAudio } from "./audio.js";
 import { Camera, cameraError } from "./camera.js";
 import { Leaderboard } from "./leaderboard.js";
@@ -22,7 +22,7 @@ function show(name) {
   screen = name;
   for (const section of document.querySelectorAll(".screen"))
     section.hidden = section.id !== `${name}-screen`;
-  $("help").hidden = name === "result";
+  document.body.dataset.screen = name;
   $("brand").disabled = name === "result";
 }
 function soundButton() {
@@ -55,6 +55,7 @@ function home() {
   releaseWakeLock();
   $("play").classList.remove("loading");
   $("play-again").classList.remove("loading");
+  delete document.body.dataset.lives;
   show("home");
 }
 function requestHome() {
@@ -112,7 +113,7 @@ async function startGame() {
   $("digit-stage").hidden = true;
   $("intro").textContent = "Pi ist …";
   replayAnimation($("intro"), "correct-pop");
-  $("feedback").textContent = "Tippe auf die nächste Ziffer.";
+  $("feedback").textContent = "\u00a0";
   renderGame();
   show("game");
   audio.startMusic();
@@ -138,6 +139,8 @@ function enableDigits(enabled) {
 }
 function renderGame() {
   $("score").textContent = game.score;
+  document.body.dataset.lives = game.hearts;
+  audio.setLives(game.hearts);
   $("hearts").replaceChildren(
     ...Array.from({ length: 3 }, (_, i) => {
       const heart = document.createElement("span");
@@ -163,17 +166,14 @@ function guess(digit) {
   audio.cue(result.correct ? "correct" : "wrong");
   renderGame();
   if (result.correct) {
-    $("feedback").textContent = [
-      "Richtig! Weiter geht’s, Zahlenpirat.",
-      "Ahoi! Die nächste Ziffer wartet.",
-      "Stark! Du bist auf Kurs.",
-    ][game.score % 3];
+    $("feedback").textContent = "Richtig!";
     replayAnimation($("sequence"), "correct-pop");
     replayAnimation($("score"), "correct-pop");
   } else {
     $("feedback").textContent = game.hearts
-      ? "Daneben! Versuch dieselbe Ziffer nochmal."
-      : "Alle Herzen verspielt. Was für ein Auftritt!";
+      ? "Falsch. Nochmal!"
+      : "Keine Leben mehr.";
+    replayAnimation($("impact-overlay"), "hit");
     replayAnimation($("digit-stage"), "wrong");
     replayAnimation($("hearts"), "wrong");
   }
@@ -185,29 +185,22 @@ function guess(digit) {
 }
 async function finishRound() {
   const token = run;
-  audio.stopMusic();
+  audio.endRound();
   await sleep(600);
   if (token !== run) return;
   $("final-score").textContent = game.score;
-  $("result-description").textContent =
-    game.score === 1 ? "richtige Nachkommastelle" : "richtige Nachkommastellen";
-  try {
-    const rank = loadScores().filter((e) => e.score >= game.score).length + 1;
-    $("result-rank").textContent =
-      rank === 1 ? "✦ Dein Kurs: Platz 1!" : `✦ Dein Kurs: Platz ${rank}!`;
-  } catch {
-    $("result-rank").textContent = "✦ Ein Auftritt für die Ewigkeit!";
-  }
+  $("result-description").textContent = game.score === 1 ? "Punkt" : "Punkte";
   $("camera").hidden = false;
   $("captured-photo").hidden = true;
   $("camera-count").textContent = "";
-  $("camera-title").textContent = "Lächeln, Zahlenpirat!";
-  $("camera-message").textContent = "Dein Foto wird gleich aufgenommen.";
+  $("camera-title").textContent = "Dein Foto";
+  $("camera-message").textContent = "Gleich geht’s los.";
   $("retry-camera").hidden = true;
   $("retry-save").hidden = true;
   show("result");
   replayAnimation($("final-score"), "correct-pop");
   audio.fanfare();
+  replayAnimation($("impact-overlay"), "win");
   confetti();
   await sleep(2200);
   if (token !== run) return;
@@ -226,7 +219,7 @@ async function visibleSecond(token) {
 }
 async function takePhoto(token = run) {
   $("retry-camera").hidden = true;
-  $("camera-title").textContent = "Lächeln, Zahlenpirat!";
+  $("camera-title").textContent = "Dein Foto";
   try {
     await camera.ready();
     if (token !== run) return;
@@ -234,8 +227,7 @@ async function takePhoto(token = run) {
       while (document.hidden && token === run) await sleep(200);
       if (token !== run) return;
       $("camera-count").textContent = count;
-      $("camera-message").textContent =
-        `Dein Foto wird in ${count} ${count === 1 ? "Sekunde" : "Sekunden"} aufgenommen.`;
+      $("camera-message").textContent = `Foto in ${count} …`;
       replayAnimation($("camera-count"), "correct-pop");
       audio.cue("tick");
       await visibleSecond(token);
@@ -249,14 +241,14 @@ async function takePhoto(token = run) {
     replayAnimation($("camera-flash"), "flash");
     audio.shutter();
     camera.stop();
-    $("camera-title").textContent = "Ab in die Hall of Fame!";
-    $("camera-message").textContent = "Dein großer Moment ist im Kasten.";
+    $("camera-title").textContent = "Foto gespeichert.";
+    $("camera-message").textContent = "";
     await sleep(1100);
     if (token !== run) return;
     await saveResult();
   } catch (error) {
     $("camera-count").textContent = "";
-    $("camera-title").textContent = "Die Kamera braucht dich.";
+    $("camera-title").textContent = "Kamera unterbrochen.";
     $("camera-message").textContent = cameraError(error);
     $("retry-camera").hidden = false;
   }
@@ -271,7 +263,7 @@ async function saveResult() {
     releaseWakeLock();
     await leaderboard.climb(scores, entry);
   } catch (error) {
-    $("camera-title").textContent = "Dein Auftritt bleibt hier.";
+    $("camera-title").textContent = "Speichern fehlgeschlagen.";
     $("camera-message").textContent = error.message;
     $("retry-save").hidden = false;
   } finally {
@@ -303,8 +295,54 @@ $("confirm-leave").addEventListener("click", () => {
   $("leave-dialog").close();
   home();
 });
-$("help").addEventListener("click", () => $("help-dialog").showModal());
-$("close-help").addEventListener("click", () => $("help-dialog").close());
+// Keep the host control out of the game UI: five taps within five seconds.
+let creditTaps = 0,
+  creditTapStart = 0;
+$("music-credit").addEventListener("click", (event) => {
+  event.preventDefault();
+  if (
+    (screen !== "home" && screen !== "scores") ||
+    starting ||
+    saving ||
+    document.querySelector("dialog[open]")
+  ) {
+    creditTaps = 0;
+    return;
+  }
+  const now = performance.now();
+  if (!creditTaps || now - creditTapStart > 5000) {
+    creditTaps = 0;
+    creditTapStart = now;
+  }
+  if (++creditTaps !== 5) return;
+  creditTaps = 0;
+  $("reset-form").reset();
+  $("confirm-reset").disabled = true;
+  $("reset-error").hidden = true;
+  $("reset-dialog").showModal();
+  $("reset-confirmation").focus();
+});
+$("reset-confirmation").addEventListener("input", () => {
+  $("confirm-reset").disabled = $("reset-confirmation").value !== "Reset";
+});
+$("reset-form").addEventListener("submit", (event) => {
+  event.preventDefault();
+  if ($("reset-confirmation").value !== "Reset") return;
+  try {
+    resetScores();
+    leaderboard.cancel();
+    if (screen === "scores") leaderboard.render([]);
+    $("reset-dialog").close();
+  } catch (error) {
+    $("reset-error").textContent = error.message;
+    $("reset-error").hidden = false;
+  }
+});
+$("cancel-reset").addEventListener("click", () => $("reset-dialog").close());
+$("reset-dialog").addEventListener("close", () => {
+  $("reset-form").reset();
+  $("confirm-reset").disabled = true;
+});
 $("sound-toggle").addEventListener("click", () => {
   audio.unlock();
   audio.toggle();
@@ -346,13 +384,17 @@ window.addEventListener("pagehide", () => {
   releaseWakeLock();
 });
 
+$("impact-overlay").addEventListener("animationend", () => {
+  $("impact-overlay").className = "impact-overlay";
+});
+
 soundButton();
 if ("serviceWorker" in navigator && window.isSecureContext) {
   navigator.serviceWorker
     .register("./sw.js")
     .then(async (registration) => {
       const ready = () => {
-        $("offline-status").textContent = "OFFLINE BEREIT";
+        $("offline-status").textContent = "Offline bereit";
         $("status-dot").classList.add("ready");
       };
       if (registration.active) ready();
@@ -362,14 +404,14 @@ if ("serviceWorker" in navigator && window.isSecureContext) {
           if (installing.state === "activated") ready();
           if (installing.state === "redundant")
             $("offline-status").textContent =
-              "OFFLINE-DOWNLOAD FEHLGESCHLAGEN – BITTE NEU LADEN";
+              "Offline-Download fehlgeschlagen. Neu laden.";
         });
       await navigator.serviceWorker.ready;
       ready();
     })
     .catch(() => {
       $("offline-status").textContent =
-        "OFFLINE-DOWNLOAD FEHLGESCHLAGEN – BITTE NEU LADEN";
+        "Offline-Download fehlgeschlagen. Neu laden.";
     });
 } else
-  $("offline-status").textContent = "FÜR OFFLINE-BETRIEB ÜBER HTTPS ÖFFNEN";
+  $("offline-status").textContent = "Für Offline-Betrieb über HTTPS öffnen.";
