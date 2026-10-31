@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#10b7cb" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Pi-Raten" />
+    <meta
+      name="description"
+      content="Die sonnigste Pi-Gameshow: Ziffern raten, Herzen retten und die Bestenliste entern. Komplett offline."
+    />
+    <title>PI-RATEN GAMESHOW!</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./assets/icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png" />
+    <link rel="stylesheet" href="./style.css" />
+    <script type="module" src="./js/app.js"></script>
+  </head>
+  <body>
+    <div class="scenery" aria-hidden="true">
+      <div class="sun"></div>
+      <div class="cloud cloud-one"></div>
+      <div class="cloud cloud-two"></div>
+      <div class="island island-left"></div>
+      <div class="island island-right"></div>
+      <div class="ocean"></div>
+      <div class="wave wave-one"></div>
+      <div class="wave wave-two"></div>
+      <span class="floating-number n1">3.14</span
+      ><span class="floating-number n2">π</span
+      ><span class="floating-number n3">∞</span>
+    </div>
+    <div class="app-shell">
+      <header class="header">
+        <button class="brand" id="brand" aria-label="Zur Startseite">
+          <span class="brand-mark">π<span>✦</span></span
+          ><span>PI-RATEN <strong>GAMESHOW!</strong></span>
+        </button>
+        <div class="header-tools">
+          <span class="edition">DIE INSEL DER UNENDLICHEN ZAHLEN</span
+          ><button
+            class="icon-button"
+            id="sound-toggle"
+            aria-label="Ton ausschalten"
+            aria-pressed="false"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M11 4 5 9H2v6h3l6 5V4Z" />
+              <path
+                class="sound-waves"
+                d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"
+              />
+              <path class="mute-cross" d="m16 9 6 6m0-6-6 6" />
+            </svg></button
+          ><button
+            class="icon-button"
+            id="help"
+            aria-label="Spielregeln und Installation"
+          >
+            ?
+          </button>
+        </div>
+      </header>
+      <main id="main">
+        <section
+          id="home-screen"
+          class="screen home-screen"
+          aria-labelledby="home-title"
+        >
+          <div class="home-copy">
+            <div class="eyebrow"><span></span> AHOI, ZAHLENPIRAT!</div>
+            <h1 id="home-title">
+              Wie viel <span>Pi steckt<br />in dir?</span>
+            </h1>
+            <p>
+              Eine unendliche Zahl. Drei Herzen.<br />Und dein großer Auftritt.
+            </p>
+            <div class="home-actions">
+              <button id="play" class="button primary">
+                <span class="button-symbol">π</span
+                ><span
+                  >Pi-Raten!<small>AUF DIE ZIFFERN, FERTIG, LOS!</small></span
+                ><span class="button-arrow">↗</span></button
+              ><button id="highscores" class="button secondary">
+                <span class="trophy-icon">♜</span> Highscores
+                <span class="button-arrow">→</span>
+              </button>
+            </div>
+            <div class="home-hint">
+              <span class="mini-hearts">♥ ♥ ♥</span
+              ><span>Wie weit kommst du nach der 3?</span>
+            </div>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <div class="orbit orbit-one"></div>
+            <div class="orbit orbit-two"></div>
+            <div class="float-badge badge-pi">3.14159…</div>
+            <div class="float-badge badge-heart">♥ <span>3 LEBEN</span></div>
+            <div class="spark spark-one">✦</div>
+            <div class="spark spark-two">✦</div>
+            <div class="spark spark-three">✧</div>
+            <div class="mascot">
+              <div class="pirate-hat">
+                <div class="hat-crown"></div>
+                <div class="hat-brim"></div>
+                <span>π</span>
+              </div>
+              <span class="pi-body">π</span>
+              <div class="eye-patch"></div>
+              <div class="pi-eye"></div>
+              <div class="pi-smile"></div>
+            </div>
+            <div class="stage-top"></div>
+            <div class="stage-base"></div>
+            <div class="stage-shadow"></div>
+            <div class="stage-caption">DIE BÜHNE GEHÖRT DIR.</div>
+          </div>
+        </section>
+        <section
+          id="game-screen"
+          class="screen game-screen"
+          hidden
+          aria-labelledby="game-heading"
+        >
+          <div class="game-top">
+            <button class="text-button" id="leave-game">← Zurück</button
+            ><span class="eyebrow" id="game-heading"
+              >DIE NÄCHSTE ZIFFER GEHÖRT DIR</span
+            >
+            <div id="hearts" class="hearts" aria-label="3 Herzen">♥ ♥ ♥</div>
+          </div>
+          <div class="game-stage">
+            <div class="score-pill">
+              <span>DEIN PUNKTESTAND</span><strong id="score">0</strong>
+            </div>
+            <div id="intro" class="intro" aria-live="polite">Pi ist …</div>
+            <div id="digit-stage" hidden>
+              <div class="digit-label">WIE GEHT'S WEITER?</div>
+              <div class="sequence">
+                <span class="pi-prefix">3.</span><span id="sequence"></span
+                ><span class="next-digit">?</span>
+              </div>
+              <p id="feedback" aria-live="polite">
+                Tippe auf die nächste Ziffer.
+              </p>
+            </div>
+          </div>
+          <div
+            class="keyboard"
+            id="keyboard"
+            aria-label="Ziffern auswählen"
+          ></div>
+          <div class="game-tip">KEIN ZEITDRUCK. NUR DU UND π.</div>
+        </section>
+        <section
+          id="result-screen"
+          class="screen result-screen"
+          hidden
+          aria-labelledby="result-title"
+        >
+          <div class="result-copy">
+            <div class="eyebrow">DAS WAR DEIN GROSSER AUFTRITT!</div>
+            <h1 id="result-title">Gut ge<span>π</span>ratet!</h1>
+            <div class="final-score" id="final-score">0</div>
+            <p id="result-description">richtige Nachkommastellen</p>
+            <div class="result-rank" id="result-rank"></div>
+          </div>
+          <div class="photo-area">
+            <div class="photo-label">DEIN PLATZ IN DER HALL OF FAME</div>
+            <div class="camera-circle">
+              <video id="camera" autoplay muted playsinline></video
+              ><img id="captured-photo" alt="Dein Highscore-Foto" hidden />
+              <div class="camera-count" id="camera-count"></div>
+              <div class="camera-flash" id="camera-flash"></div>
+            </div>
+            <h2 id="camera-title">Lächeln, Zahlenpirat!</h2>
+            <p id="camera-message" aria-live="polite">
+              Dein Foto wird gleich aufgenommen.
+            </p>
+            <button id="retry-camera" class="button secondary compact" hidden>
+              Kamera erneut starten</button
+            ><button id="retry-save" class="button secondary compact" hidden>
+              Nochmal speichern
+            </button>
+          </div>
+        </section>
+        <section
+          id="scores-screen"
+          class="screen scores-screen"
+          hidden
+          aria-labelledby="scores-title"
+        >
+          <div class="scores-heading">
+            <div>
+              <div class="eyebrow">DIE LEGENDÄREN ZAHLENPIRATEN</div>
+              <h1 id="scores-title">Hall of <span>Fame.</span></h1>
+            </div>
+            <button id="play-again" class="button primary compact">
+              π &nbsp; Pi-Raten! <span>↗</span>
+            </button>
+          </div>
+          <div class="scores-panel">
+            <div class="table-heading">
+              <span>PLATZ</span><span>ZAHLENPIRAT</span
+              ><span>RICHTIGE ZIFFERN</span>
+            </div>
+            <div
+              id="scores-list"
+              class="scores-list"
+              tabindex="0"
+              aria-label="Bestenliste"
+            ></div>
+            <div id="empty-scores" class="empty-scores" hidden>
+              <span>♜</span>
+              <h2>Der erste Schatz wartet auf dich.</h2>
+              <p>Noch keine Highscores. Entere die Bestenliste!</p>
+            </div>
+          </div>
+          <div class="scores-bottom">
+            <button class="text-button" id="back-home">← Zur Startseite</button
+            ><span id="score-summary">DEIN RUHM BLEIBT AUF DIESER INSEL.</span>
+          </div>
+        </section>
+      </main>
+      <footer>
+        <span
+          ><span class="status-dot" id="status-dot"></span
+          ><span id="offline-status"
+            >OFFLINE-MODUS WIRD VORBEREITET …</span
+          ></span
+        ><span>UNENDLICH VIELE ZIFFERN. ENDLICH DEINE SHOW. <b>π</b></span>
+      </footer>
+    </div>
+    <dialog id="help-dialog">
+      <button
+        class="dialog-close icon-button"
+        id="close-help"
+        aria-label="Schließen"
+      >
+        ×
+      </button>
+      <div class="eyebrow">WILLKOMMEN AN BORD</div>
+      <h2>So wird Pi geentert.</h2>
+      <p>
+        Du startest nach <strong>3.</strong> und errätst die Nachkommastellen
+        von π. Jede richtige Ziffer gibt einen Punkt. Ein Fehler kostet ein Herz
+        – danach versuchst du dieselbe Ziffer nochmal. Nach drei Fehlern werden
+        dein Foto und dein Punktestand gespeichert.
+      </p>
+      <h3>Auf dem iPad installieren</h3>
+      <p>
+        In Safari öffnen → <strong>Teilen</strong> →
+        <strong>Zum Home-Bildschirm</strong> → als Web-App hinzufügen. Warte auf
+        „Offline bereit“, dann kannst du ohne Internet spielen. Halte das iPad
+        quer.
+      </p>
+      <h3>Nur auf deinem Gerät</h3>
+      <p>
+        Fotos und Punkte bleiben in diesem Browser. Es gibt keinen Upload.
+        Gelöschte Websitedaten löschen auch die Bestenliste.
+      </p>
+      <details>
+        <summary>Musik & Soundeffekte</summary>
+        <p>
+          „Cipher“ von Kevin MacLeod (incompetech.com),
+          <a
+            href="https://creativecommons.org/licenses/by/4.0/"
+            target="_blank"
+            rel="noopener"
+            >CC BY 4.0</a
+          >. Soundeffekte: Kenney, „Interface Sounds“, CC0. Zusätzliche
+          Show-Jingles: prozedural erzeugt.
+        </p>
+      </details>
+    </dialog>
+    <dialog id="leave-dialog">
+      <h2>Schon von Bord?</h2>
+      <p>Deine laufende Runde wird nicht gespeichert.</p>
+      <div class="dialog-actions">
+        <button id="keep-playing" class="button primary compact">
+          Weiterspielen</button
+        ><button id="confirm-leave" class="button secondary compact">
+          Runde beenden
+        </button>
+      </div>
+    </dialog>
+    <dialog id="camera-dialog">
+      <div class="eyebrow">DEIN AUFTRITT BRAUCHT EIN FOTO</div>
+      <h2>Kamera an, Bühne frei!</h2>
+      <p id="camera-error">
+        Bitte erlaube den Kamerazugriff, damit dein Highscore ein Gesicht
+        bekommt.
+      </p>
+      <div class="dialog-actions">
+        <button id="camera-start-retry" class="button primary compact">
+          Kamera starten</button
+        ><button id="camera-cancel" class="button secondary compact">
+          Zurück
+        </button>
+      </div>
+    </dialog>
+    <div class="confetti" id="confetti" aria-hidden="true"></div>
+    <div class="rotate-notice">
+      <span>↻</span>
+      <h2>Einmal quer, bitte!</h2>
+      <p>Diese Bühne braucht das Querformat.</p>
+    </div>
+    <noscript>Bitte aktiviere JavaScript, um Pi-Raten zu spielen.</noscript>
+  </body>
+</html>

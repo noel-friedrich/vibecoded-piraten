@@ -1,0 +1,27 @@
+{
+  "id": "./",
+  "name": "PI-RATEN GAMESHOW!",
+  "short_name": "Pi-Raten",
+  "description": "Ziffern raten, Herzen retten, die Bestenliste entern!",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#c9f2ed",
+  "theme_color": "#10b7cb",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
