@@ -146,9 +146,14 @@
         >
           <div class="scores-heading">
             <h1 id="scores-title">Highscores</h1>
-            <button id="play-again" class="button primary compact">
-              Pi-Raten! <span aria-hidden="true">↗</span>
-            </button>
+            <div class="scores-actions">
+              <button id="open-gallery" class="button secondary compact">
+                Fotos
+              </button>
+              <button id="play-again" class="button primary compact">
+                Pi-Raten! <span aria-hidden="true">↗</span>
+              </button>
+            </div>
           </div>
           <div class="scores-panel">
             <div class="table-heading">
@@ -167,6 +172,29 @@
           <div class="scores-bottom">
             <button class="text-button" id="back-home">← Zurück</button
             ><span id="score-summary" aria-live="polite"></span>
+          </div>
+        </section>
+        <section
+          id="gallery-screen"
+          class="screen gallery-screen"
+          hidden
+          aria-labelledby="gallery-title"
+        >
+          <div class="scores-heading">
+            <h1 id="gallery-title">Fotos</h1>
+            <button id="share-gallery" class="button primary compact" disabled>
+              Bild teilen ↗
+            </button>
+          </div>
+          <div
+            id="gallery-grid"
+            class="gallery-grid"
+            tabindex="0"
+            aria-label="Fotogalerie"
+          ></div>
+          <div class="scores-bottom">
+            <button id="gallery-back" class="text-button">← Highscores</button
+            ><span id="gallery-status" role="status"></span>
           </div>
         </section>
       </main>

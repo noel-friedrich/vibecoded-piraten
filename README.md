@@ -31,6 +31,10 @@ Fotos (160 × 160 JPEG), Punkte und Zeitstempel liegen ausschließlich in `local
 
 Die App fordert bei unterstützten Browsern einen Screen Wake Lock an. Ein Countdown pausiert im Hintergrund. Offline-Dateien liegen im Cache Storage des Service Workers, Spielstände ausschließlich im localStorage. Bei Updates die Cache-Version in `sw.js` erhöhen.
 
+## Fotogalerie und Bild teilen
+
+Highscores → **Fotos** zeigt alle gespeicherten Fotos in sechs Spalten, nach Punkten sortiert. Jede Kachel zeigt ihren Punktestand oben links. **Bild teilen** exportiert die gesamte Galerie mit dem Header **PIRATEN** als PNG im Show-Design und öffnet auf unterstützten Geräten das Teilen-Menü. Alternativ wird das Bild heruntergeladen. Auch Fotos außerhalb des sichtbaren Bereichs werden exportiert. Bei sehr großen Galerien wird die Auflösung für den iPad-Speicher reduziert. Alles funktioniert lokal und offline.
+
 ## Highscores zurücksetzen
 
 Auf der Startseite oder in der Bestenliste **fünfmal innerhalb von fünf Sekunden auf die Musik-Quellenangabe unten rechts tippen**. Im Dialog exakt `Reset` eingeben und **Alles löschen** drücken. Das entfernt sämtliche Highscores und Fotos endgültig. Abbrechen verändert nichts; Toneinstellung und Offline-Dateien bleiben erhalten. Während einer Runde oder der Ergebnisanimation ist der Reset gesperrt. Die vollständigen Musik-Credits lassen sich weiterhin über das Link-Kontextmenü öffnen.

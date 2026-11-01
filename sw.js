@@ -1,10 +1,11 @@
-const CACHE = "pi-raten-v5-hearts";
+const CACHE = "pi-raten-v6-gallery";
 const FILES = [
   "./",
   "./index.html",
   "./style.css",
   "./manifest.webmanifest",
   "./js/app.js",
+  "./js/gallery.js",
   "./js/audio.js",
   "./js/camera.js",
   "./js/effects.js",

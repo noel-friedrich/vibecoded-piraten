@@ -1,3 +1,4 @@
+import { Gallery } from "./gallery.js";
 import { Game } from "./game.js";
 import { loadScores, addScore, resetScores } from "./storage.js";
 import { ShowAudio } from "./audio.js";
@@ -8,6 +9,11 @@ import { sleep, confetti, replayAnimation } from "./effects.js";
 const $ = (id) => document.getElementById(id);
 const audio = new ShowAudio();
 const camera = new Camera($("camera"));
+const gallery = new Gallery(
+  $("gallery-grid"),
+  $("share-gallery"),
+  $("gallery-status"),
+);
 const leaderboard = new Leaderboard($("scores-list"), audio);
 let game,
   screen = "home",
@@ -128,11 +134,20 @@ function renderGame() {
   audio.setLives(game.hearts);
   $("hearts").replaceChildren(
     ...Array.from({ length: 3 }, (_, i) => {
-      const heart = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      const heart = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "svg",
+      );
       heart.setAttribute("viewBox", "0 0 24 24");
       heart.setAttribute("aria-hidden", "true");
-      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      path.setAttribute("d", "M12 21 3.5 12.7C-2 7.2 5.8-1.1 12 5.4 18.2-1.1 26 7.2 20.5 12.7Z");
+      const path = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "path",
+      );
+      path.setAttribute(
+        "d",
+        "M12 21 3.5 12.7C-2 7.2 5.8-1.1 12 5.4 18.2-1.1 26 7.2 20.5 12.7Z",
+      );
       path.setAttribute("fill", "currentColor");
       heart.append(path);
       if (i >= game.hearts) heart.classList.add("lost");
@@ -310,6 +325,16 @@ $("highscores").addEventListener("click", () => {
 });
 $("brand").addEventListener("click", requestHome);
 $("leave-game").addEventListener("click", requestHome);
+$("open-gallery").addEventListener("click", () => {
+  leaderboard.cancel();
+  show("gallery");
+  try {
+    gallery.render(loadScores());
+  } catch (error) {
+    $("gallery-status").textContent = error.message;
+  }
+});
+$("gallery-back").addEventListener("click", scores);
 $("back-home").addEventListener("click", home);
 $("keep-playing").addEventListener("click", () => $("leave-dialog").close());
 $("confirm-leave").addEventListener("click", () => {

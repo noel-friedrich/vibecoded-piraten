@@ -93,6 +93,7 @@ test("every offline asset exists, including all imported JS and referenced local
     "camera",
     "effects",
     "game",
+    "gallery",
     "leaderboard",
     "pi",
     "storage",
